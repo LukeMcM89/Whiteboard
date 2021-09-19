@@ -1,102 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Whiteboard Project</title>
-    <style>body{margin:0;} canvas{display:block;}</style>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
     <script>
         //1. wait for the HTML to fully load
-document.addEventListener("DOMContentLoaded", () => {
+        document.addEventListener("DOMContentLoaded", () => {
 
-//2. canvas setup
-  const canvas = document.querySelector("canvas"),
-      ctx = canvas.getContext("2d"),
-      width = canvas.width = window.innerWidth,
-      height = canvas.height = window.innerHeight;
+            //2. canvas setup
+            const canvas = document.querySelector("canvas"),
+                ctx = canvas.getContext("2d"),
+                width = canvas.width = window.innerWidth,
+                height = canvas.height = window.innerHeight;
 
-  //3. settings
-  const defaultColor = "black",
-      defaultLineWidth = 4,
-      defaultLineCap = "round"; //options: "butt", "round", "square"
+            //3. settings
+            const defaultColor = "black",
+                defaultLineWidth = 4,
+                defaultLineCap = "round"; //options: "butt", "round", "square"
 
-  //4. application variables
-  var previousPoint = null,
-    color = defaultColor,
-    lineWidth = defaultLineWidth,
-    lineCap = defaultLineCap;
+            //4. application variables
+            var previousPoint = null,
+                color = defaultColor,
+                lineWidth = defaultLineWidth,
+                lineCap = defaultLineCap;
 
-  //5. event listeners
-  canvas.addEventListener("mousedown", startDrawing);
-  canvas.addEventListener("touchstart", startDrawing);
-  canvas.addEventListener("pointerdown", startDrawing);
-  window.addEventListener("keyup", handleKeyup);
+            //5. event listeners
+            canvas.addEventListener("mousedown", startDrawing);
+            canvas.addEventListener("touchstart", startDrawing);
+            canvas.addEventListener("pointerdown", startDrawing);
+            window.addEventListener("keyup", handleKeyup);
 
-  function startDrawing(e){
-    //stop listening for down events
-      canvas.removeEventListener("mousedown", startDrawing);
-    canvas.removeEventListener("touchstart", startDrawing);
-    canvas.removeEventListener("pointerdown", startDrawing);
-      //start listening for move events
-      canvas.addEventListener("mousemove", draw);
-    canvas.addEventListener("touchmove", draw);
-    canvas.addEventListener("pointermove", draw);
-      //start listening for up events
-      canvas.addEventListener("mouseup", stopDrawing);
-    canvas.addEventListener("touchend", stopDrawing);
-    canvas.addEventListener("pointerup", stopDrawing);
-      //set previous point
-      previousPoint = {x: e.clientX, y: e.clientY};
-}
+            function startDrawing(e) {
+                //stop listening for down events
+                canvas.removeEventListener("mousedown", startDrawing);
+                canvas.removeEventListener("touchstart", startDrawing);
+                canvas.removeEventListener("pointerdown", startDrawing);
+                //start listening for move events
+                canvas.addEventListener("mousemove", draw);
+                canvas.addEventListener("touchmove", draw);
+                canvas.addEventListener("pointermove", draw);
+                //start listening for up events
+                canvas.addEventListener("mouseup", stopDrawing);
+                canvas.addEventListener("touchend", stopDrawing);
+                canvas.addEventListener("pointerup", stopDrawing);
+                //set previous point
+                previousPoint = { x: e.clientX, y: e.clientY };
+            }
 
-  function stopDrawing(){
-    //start listening for down events
-      canvas.addEventListener("mousedown", startDrawing);
-    canvas.addEventListener("touchstart", startDrawing);
-    canvas.addEventListener("pointerdown", startDrawing);
-      //stop listening for move events
-      canvas.removeEventListener("mousemove", draw);
-    canvas.removeEventListener("touchmove", draw);
-    canvas.removeEventListener("pointermove", draw);
-      //stop listening for up events
-      canvas.removeEventListener("mouseup", stopDrawing);
-    canvas.removeEventListener("touchend", stopDrawing);
-    canvas.removeEventListener("pointerup", stopDrawing);
-      //unset previous point
-      previousPoint = null;
-}
+            function stopDrawing() {
+                //start listening for down events
+                canvas.addEventListener("mousedown", startDrawing);
+                canvas.addEventListener("touchstart", startDrawing);
+                canvas.addEventListener("pointerdown", startDrawing);
+                //stop listening for move events
+                canvas.removeEventListener("mousemove", draw);
+                canvas.removeEventListener("touchmove", draw);
+                canvas.removeEventListener("pointermove", draw);
+                //stop listening for up events
+                canvas.removeEventListener("mouseup", stopDrawing);
+                canvas.removeEventListener("touchend", stopDrawing);
+                canvas.removeEventListener("pointerup", stopDrawing);
+                //unset previous point
+                previousPoint = null;
+            }
 
-  //6. DRAW!!! :D
-  function draw(e){
-    if (!previousPoint) return;
-      ctx.strokeStyle = color;
-      ctx.lineWidth = lineWidth;
-      ctx.lineCap = lineCap;
-      ctx.beginPath();
-      ctx.moveTo(previousPoint.x, previousPoint.y);
-      ctx.lineTo(e.clientX, e.clientY);
-      ctx.stroke();
-      previousPoint.x = e.clientX;
-      previousPoint.y = e.clientY;
-}
+            //6. DRAW!!! :D
+            function draw(e) {
+                if (!previousPoint) return;
+                ctx.strokeStyle = color;
+                ctx.lineWidth = lineWidth;
+                ctx.lineCap = lineCap;
+                ctx.beginPath();
+                ctx.moveTo(previousPoint.x, previousPoint.y);
+                ctx.lineTo(e.clientX, e.clientY);
+                ctx.stroke();
+                previousPoint.x = e.clientX;
+                previousPoint.y = e.clientY;
+            }
 
-  //7. UI
-  function handleKeyup(e){
-    switch (e.key){
-        case "Escape": //erase canvas
-            ctx.clearRect(0, 0, width, height);
-            break;
-    }
-}
+            //7. UI
+            function handleKeyup(e) {
+                switch (e.key) {
+                    case "Escape": //erase canvas
+                    //fillRect for ESC color change
+                        ctx.clearRect(0, 0, width, height);
+                        break;
+                    case ",": //reduce line width
+                    case "-":
+                        lineWidth = Math.max(1, lineWidth - 1);
+                        break;
+                    case "=": //increase line width
+                    case ".":
+                        lineWidth = Math.min(50, lineWidth + 1);
+                        break;
+                    //change color
+                    case "r": color = "red"; break;
+                    case "g": color = "green"; break;
+                    case "b": color = "blue"; break;
+                    case "k": color = "black"; break;
+                    case "w": color = "white"; break;
+                }
+            }
 
 });
 
-
-
     </script>
 </head>
+
 <body>
     <canvas></canvas>
 </body>
+
 </html>
